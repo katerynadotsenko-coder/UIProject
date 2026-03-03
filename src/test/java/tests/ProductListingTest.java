@@ -43,8 +43,6 @@ public class ProductListingTest extends BaseTest {
             // Re-open to reset any previous filter
             page.openPage();
             page.clickCategoryFilter(category);
-
-            Thread.sleep(5000);
             int count = page.getProductCards().size();
             results.put(category, count);
 

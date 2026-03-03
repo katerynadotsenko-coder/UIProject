@@ -38,12 +38,13 @@ public class BaseTest {
     }
 
     @AfterMethod(alwaysRun = true)
-    public void tearDown(ITestResult result) {
+    public void tearDown(ITestResult result) throws InterruptedException {
         // Capture screenshot on test failure and attach to Allure report
         if (result.getStatus() == ITestResult.FAILURE && driver != null) {
             ScreenshotUtils.capture(driver, result.getName());
         }
         if (driver != null) {
+            System.out.println("Quitting!!");
             driver.quit();
         }
     }
