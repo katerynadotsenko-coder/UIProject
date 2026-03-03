@@ -26,25 +26,22 @@ public class NewTestsReview extends BaseTest {
 
     @Test(description = "PLP_001")
     @Story("Category Filter")
-    @Description("Iterate each category filter, click it, count the visible product cards, "
-            + "and assert the count is greater than zero. Store and log results per category.")
-    public void stupidname() throws InterruptedException {
+    @Description("Iterate each category filter, click it, count the visible product cards, and assert the count is greater than zero. Store and log results per category.")
+    public void verifyProductCountsPerCategory() throws InterruptedException {
         Map<String, Integer> results = new LinkedHashMap<>();
 
-        for (String category : KNOWN_CATEGORIES) {
-            // Re-open to reset any previous filter
-            page.openPage();
-            page.clickCategoryFilter(category);
+        KNOWN_CATEGORIES.stream()
+                .forEach(category -> {
+                    page.openPage();
+                    page.clickCategoryFilter(category);
 
-            int count = page.getProductCards().size();
-            results.put(category, count);
+                    int count = page.getVisibleProductsCount();
+                    results.put(category, count);
 
-            System.out.printf("[PLP_001] Category: %-15s → %d product(s) on page 1%n",
-                    category, count);
+                    log.info("[PLP_001] Category: {} → {} product(s) on page 1", category, count);
+                });
 
-        }
-
-        System.out.println("\n[PLP_001] Summary:");
-        results.forEach((cat, cnt) -> System.out.printf("  %-15s : %d%n", cat, cnt));
+        log.info("\n[PLP_001] Summary:");
+        results.forEach((cat, cnt) -> log.info("  {} : {}", cat, cnt));
     }
 }
