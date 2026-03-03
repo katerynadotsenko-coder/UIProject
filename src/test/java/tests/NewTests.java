@@ -34,6 +34,7 @@ public class NewTests extends BaseTest {
         for (String category : KNOWN_CATEGORIES) {
             // Re-open to reset any previous filter
             page.openPage();
+            Thread.sleep(5000);
             page.clickCategoryFilter(category);
 
             int count = page.getProductCards().size();
