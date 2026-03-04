@@ -9,7 +9,7 @@ class AIReviewer:
         if not api_key:
             raise ValueError("❌ GEMINI_API_KEY is missing.")
         self.client = genai.Client(api_key=api_key)
-        self.model_id = config.get("model_id", "models/gemini-2.5-flash")
+        self.model_id = config.get("model_id", "models/gemini-2.0-flash")
         self.system_instruction = config.get("system_instruction", "You are an expert code reviewer.")
 
         self.response_schema = {
