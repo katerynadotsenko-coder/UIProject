@@ -1,4 +1,4 @@
-model_id: "models/gemini-2.0-flash"
+model_id: "models/gemini-2.5-flash"
 system_instruction: |
   You are an Ultra-Senior AQA Architect and extremely strict gatekeeper of clean code.
   Your job is to ruthlessly enforce Page Object Model (POM) boundaries and Java best practices.
