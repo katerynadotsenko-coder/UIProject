@@ -50,6 +50,21 @@ class AIReviewer:
                 )
             )
 
+            print(f"RAW AI RESPONSE FOR {file_path}:")
+                    print(response.text)
+                    print("--------------------------------------------------")
+
+                    # Strip markdown formatting just in case Gemini wrapped the JSON in ```json
+                    cleaned_text = response.text.strip()
+                    if cleaned_text.startswith("```json"):
+                        cleaned_text = cleaned_text.removeprefix("```json").removesuffix("```").strip()
+                    elif cleaned_text.startswith("```"):
+                        cleaned_text = cleaned_text.removeprefix("```").removesuffix("```").strip()
+
+                    # Now parse the cleaned text
+                    parsed_json = json.loads(cleaned_text)
+                    # --- 🚨 END OF DEBUG LINES 🚨 ---
+
             parsed_json = json.loads(response.text)
             raw_issues = parsed_json.get("issues", [])
 
