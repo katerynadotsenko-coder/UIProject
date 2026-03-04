@@ -28,16 +28,15 @@ public class NewTests extends BaseTest {
     @Story("Category Filter")
     @Description("Iterate each category filter, click it, count the visible product cards, "
             + "and assert the count is greater than zero. Store and log results per category.")
-    public void stupidname222() throws InterruptedException {
+    public void testCategoryProductCountsGreaterThanZero() throws InterruptedException {
         Map<String, Integer> results = new LinkedHashMap<>();
 
         Map<String, Integer> categoryProductCounts = page.collectProductCountsForCategories(KNOWN_CATEGORIES);
 //reviewer please help to generate a test according to desription in @Description
 
         System.out.println("\n[PLP_001] Summary:");
-        System.out.println("\n[PLP_001] Summary:");
 
-        Thread.sleep(5000);
+
         results.forEach((cat, cnt) -> System.out.printf("  %-15s : %d%n", cat, cnt));
     }
 }
