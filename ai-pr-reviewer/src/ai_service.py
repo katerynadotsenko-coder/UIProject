@@ -1,0 +1,77 @@
+import json
+from typing import Dict, Set, Any
+from google import genai
+from google.genai import types
+
+class AIReviewer:
+    def __init__(self, api_key: str, config: Dict[str, Any]):
+        if not api_key:
+            raise ValueError("❌ GEMINI_API_KEY is missing.")
+        self.client = genai.Client(api_key=api_key)
+        self.model_id = config.get("model_id", "models/gemini-2.5-flash")
+        self.system_instruction = config.get("system_instruction", "You are an expert code reviewer.")
+
+        self.response_schema = {
+            "type": "OBJECT",
+            "properties": {
+                "reasoning": {"type": "STRING"},
+                "issues": {
+                    "type": "ARRAY",
+                    "items": {
+                        "type": "OBJECT",
+                        "properties": {
+                            "line": {"type": "INTEGER"},
+                            "rule": {"type": "STRING"},
+                            "description": {"type": "STRING"},
+                            "code": {"type": "STRING"},
+                            "extracted_methods": {"type": "STRING"}
+                        },
+                        "required": ["line", "rule", "description", "code", "extracted_methods"]
+                    }
+                }
+            },
+            "required": ["reasoning", "issues"]
+        }
+
+    def analyze_code(self, file_path: str, content: str, valid_lines: Set[int]) -> Dict:
+        numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(content.split('\n'))]
+        numbered_content = "\n".join(numbered_lines)
+        user_prompt = f"FILE ( {file_path} ):\n```\n{numbered_content}\n```"
+
+        try:
+            response = self.client.models.generate_content(
+                model=self.model_id,
+                contents=user_prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=self.system_instruction,
+                    temperature=0.0,
+                    response_mime_type="application/json",
+                    response_schema=self.response_schema
+                )
+            )
+
+            parsed_json = json.loads(response.text)
+            raw_issues = parsed_json.get("issues", [])
+
+            inline_comments = []
+            general_feedback = ""
+
+            for issue in raw_issues:
+                line = int(issue.get('line', -1))
+                body = (
+                    f"### ❌ {issue.get('rule')}\n"
+                    f"{issue.get('description')}\n\n"
+                    f"### 🛠️ RECOMMENDED FIX\n```java\n{issue.get('code')}\n```\n"
+                )
+                if issue.get('extracted_methods'):
+                    body += f"### 📦 EXTRACTED METHODS\n{issue.get('extracted_methods')}\n"
+
+                if line in valid_lines:
+                    inline_comments.append({"path": file_path, "line": line, "body": body})
+                else: general_feedback += f"\n**File:** `{file_path}` (Line {line})\n{body}\n---"
+
+            return {"inline": inline_comments, "general": general_feedback}
+
+        except Exception as e:
+            print(f"💥 AI Error for {file_path}: {e}")
+            return {"inline": [], "general": ""}
