@@ -177,9 +177,8 @@ public class ProductListingPage {
      * </p>
      */
     private By categoryTileLocator(String categoryName) {
-        String name = categoryName;
         return By.xpath(
-                "//div//p[contains(text(),'" + name + "')]");
+                "//div//p[contains(text(),'" + categoryName + "')]");
     }
 
     /**
