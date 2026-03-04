@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class NewTestsReview extends BaseTest {
 
     private ProductListingPage page;
@@ -36,10 +37,15 @@ public class NewTestsReview extends BaseTest {
             + "find the highest-rated product per category, and assert rating > 0.")
     public void findHighestRatedProductPerCategory() {
         Map<String, ProductDetails> highestRatedProducts = page.getHighestRatedProductPerCategory(KNOWN_CATEGORIES);
+        assertHighestRatedProductsHaveValidRatings(highestRatedProducts);
+        log.info("[PLP_003] All categories processed successfully.");
+    }
+
+    private void assertHighestRatedProductsHaveValidRatings(Map<String, ProductDetails> highestRatedProducts) {
         highestRatedProducts.forEach((category, product) -> {
             log.info("[PLP_003] Category: {} | Highest rated: {} ({} stars)", category, product.getName(), product.getRating());
             Assert.assertTrue(product.getRating() > 0, "No valid rating found for category: " + category);
         });
-        log.info("[PLP_003] All categories processed successfully.");
     }
+
 }

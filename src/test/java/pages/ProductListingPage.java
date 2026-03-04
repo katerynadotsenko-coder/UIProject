@@ -92,7 +92,9 @@ public class ProductListingPage {
     /* Product cards */
     /* ------------------------------------------------------------------ */
 
-    /** Returns all visible product card elements on the current page. */
+    /**
+     * Returns all visible product card elements on the current page.
+     */
     public List<WebElement> getProductCards() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(productCards));
         return driver.findElements(productCards);
@@ -100,7 +102,9 @@ public class ProductListingPage {
 
     // ---- Per-card accessors --------------------------------------------
 
-    /** Extracts the product name from a card element. */
+    /**
+     * Extracts the product name from a card element.
+     */
     public String getProductName(WebElement card) {
         return card.findElement(productNameInCard).getText().trim();
     }
@@ -163,7 +167,7 @@ public class ProductListingPage {
      *
      * <p>
      * Tile DOM structure (observed on live page):
-     * 
+     *
      * <pre>
      * &lt;div class="MuiPaper-root ..."&gt;
      *   &lt;h6 class="MuiTypography-h6"&gt;BOOKS&lt;/h6&gt;
@@ -175,7 +179,7 @@ public class ProductListingPage {
     private By categoryTileLocator(String categoryName) {
         String name = categoryName;
         return By.xpath(
-                "//div//p[contains(text(),'"+ name +"')]");
+                "//div//p[contains(text(),'" + name + "')]");
     }
 
     /**
@@ -208,19 +212,25 @@ public class ProductListingPage {
     /* Pagination */
     /* ------------------------------------------------------------------ */
 
-    /** Returns the currently active page number. */
+    /**
+     * Returns the currently active page number.
+     */
     public int getCurrentPageNumber() {
         WebElement active = wait.until(
                 ExpectedConditions.visibilityOfElementLocated(activePage));
         return Integer.parseInt(active.getText().trim());
     }
 
-    /** Returns the total number of numbered page buttons in the pagination bar. */
+    /**
+     * Returns the total number of numbered page buttons in the pagination bar.
+     */
     public int getTotalPages() {
         return driver.findElements(paginationItems).size();
     }
 
-    /** Clicks the page-number button for the given page. */
+    /**
+     * Clicks the page-number button for the given page.
+     */
     public void clickPageNumber(int page) {
         List<WebElement> buttons = driver.findElements(paginationItems);
         for (WebElement btn : buttons) {
@@ -233,13 +243,17 @@ public class ProductListingPage {
         throw new IllegalArgumentException("Page button not found: " + page);
     }
 
-    /** Clicks the Next (→) pagination button. */
+    /**
+     * Clicks the Next (→) pagination button.
+     */
     public void clickNext() {
         driver.findElement(paginationNext).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(productCards));
     }
 
-    /** Clicks the Previous (←) pagination button. */
+    /**
+     * Clicks the Previous (←) pagination button.
+     */
     public void clickPrevious() {
         driver.findElement(paginationPrev).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(productCards));
@@ -263,56 +277,56 @@ public class ProductListingPage {
     }
 
     public int getProductCardCount() {
-        wait.until(ExpectedConditions.visibilityOfAllElements(getProductCards()));
-        int count = getProductCards().size();
+        List<WebElement> cards = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(productCards));
+        int count = cards.size();
         log.debug("Found {} product cards.", count);
         return count;
     }
 
+    private int getProductCountForCategory(String category) {
+        clickCategoryFilter(category);
+        int count = getProductCardCount();
+        log.info("[PLP_001] Category: {} → {} product(s) on page 1", category, count);
+        return count;
+    }
+
     public Map<String, Integer> collectProductCountsForCategories(List<String> categories) {
-        Map<String, Integer> results = new LinkedHashMap<>();
-
-        categories.forEach(category -> {
-            openPage();
-            clickCategoryFilter(category);
-            int count = getProductCardCount();
-            results.put(category, count);
-            log.info("[PLP_001] Category: {} → {} product(s) on page 1", category, count);
-        });
-
+        openPage();
+        Map<String, Integer> results = categories.stream().collect(
+                Collectors.toMap(category -> category, this::getProductCountForCategory, (existing, replacement)
+                        -> existing, LinkedHashMap::new));
         log.info("[PLP_001] Summary:");
         results.forEach((cat, cnt) -> log.info("  {}: {}", cat, cnt));
-
         return results;
     }
 
     public Map<String, ProductDetails> getHighestRatedProductPerCategory(List<String> categories) {
-        return categories.stream()
-                .collect(Collectors.toMap(
-                        category -> category,
-                        category -> {
-                            openPage();
-                            clickCategoryFilter(category);
-                            return findHighestRatedProductInCurrentCategory();
-                        },
-                        (existing, replacement) -> existing,
-                        LinkedHashMap::new
-                ));
+        openPage();
+        return categories.stream().collect(Collectors.toMap(category -> category, this::getHighestRatedProductForCategory,
+                (existing, replacement) -> existing, LinkedHashMap::new));
+    }
+
+    private ProductDetails getHighestRatedProductForCategory(String category) {
+        return findHighestRatedProductInCurrentCategory();
     }
 
     private ProductDetails findHighestRatedProductInCurrentCategory() {
         int totalPages = getTotalPages();
 
-        Optional<ProductDetails> maxProduct = IntStream.rangeClosed(1, totalPages)
-                .mapToObj(p -> getProductCardsDetails()) // simplified for debug
-                .flatMap(List::stream)
-                .max(Comparator.comparingDouble(ProductDetails::getRating));
+        List<ProductDetails> allProductsInCurrentCategory = IntStream.rangeClosed(1, totalPages)
+                .mapToObj(pageNumber -> {
+                    clickPageNumber(pageNumber);
+                    return getProductCardsDetails();
+                })
+                .<ProductDetails>flatMap(Collection::stream) // Add <ProductDetails> here
+                .toList();
 
-// If this line stays red, the issue is your Constructor or Return Type
-        return maxProduct.orElse(new ProductDetails("No Product Found", 0.0));
+        return allProductsInCurrentCategory.stream()
+                .max(Comparator.comparingDouble(ProductDetails::getRating))
+                .orElse(new ProductDetails("No Product Found", 0.0));
     }
 
-    public List getProductCardsDetails() {
+    public List<ProductDetails> getProductCardsDetails() {
         return getProductCards().stream()
                 .map(this::extractProductDetailsFromCard)
                 .collect(Collectors.toList());
