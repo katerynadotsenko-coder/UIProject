@@ -1,4 +1,5 @@
 import json
+import sys
 from typing import Dict, Set, Any
 from google import genai
 from google.genai import types
@@ -86,9 +87,13 @@ class AIReviewer:
             return {"inline": inline_comments, "general": general_feedback}
 
         except Exception as e:
+            error_msg = str(e)
             print(f"💥 AI Error for {file_path}: {repr(e)}")
-            return {"inline": [], "general": ""}
 
-        except Exception as e:
-            print(f"💥 AI Error for {file_path}: {e}")
+            # 🚨 Check if it's a Rate Limit error
+            if "429" in error_msg or "RESOURCE_EXHAUSTED" in error_msg:
+                print("❌ FATAL: Gemini API Rate Limit Exceeded. Failing the GitHub Action!")
+                sys.exit(1) # This forces the GitHub Action step to turn RED
+
+            # For other minor errors, return empty so the rest of the files can be checked
             return {"inline": [], "general": ""}
