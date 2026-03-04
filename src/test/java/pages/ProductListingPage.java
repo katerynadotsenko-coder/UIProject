@@ -5,9 +5,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pages.models.ProductDetails;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Page Object for the E-commerce Product Listing &amp; Pagination challenge.
@@ -23,7 +28,7 @@ public class ProductListingPage {
     /* ------------------------------------------------------------------ */
     /* Constants */
     /* ------------------------------------------------------------------ */
-
+    private static final Logger log = LoggerFactory.getLogger(ProductListingPage.class);
     private static final String PAGE_URL = "https://www.cnarios.com/challenges/product-listing-pagination#challenge";
 
     private static final Duration WAIT_TIMEOUT = Duration.ofSeconds(15);
@@ -168,13 +173,9 @@ public class ProductListingPage {
      * </p>
      */
     private By categoryTileLocator(String categoryName) {
-        String upper = categoryName.toUpperCase();
-        // Match any MuiPaper-root whose h6 text equals the category in uppercase,
-        // while excluding tiles that are descendants of a MuiCard-root (product cards).
+        String name = categoryName;
         return By.xpath(
-                "//div[contains(@class,'MuiPaper-root')" +
-                        " and not(ancestor::div[contains(@class,'MuiCard-root')])" +
-                        " and .//h6[normalize-space(text())='" + upper + "']]");
+                "//div//p[contains(text(),'"+ name +"')]");
     }
 
     /**
@@ -259,5 +260,67 @@ public class ProductListingPage {
     public boolean isPreviousEnabled() {
         WebElement btn = driver.findElement(paginationPrev);
         return btn.isEnabled() && btn.getAttribute("disabled") == null;
+    }
+
+    public int getProductCardCount() {
+        wait.until(ExpectedConditions.visibilityOfAllElements(getProductCards()));
+        int count = getProductCards().size();
+        log.debug("Found {} product cards.", count);
+        return count;
+    }
+
+    public Map<String, Integer> collectProductCountsForCategories(List<String> categories) {
+        Map<String, Integer> results = new LinkedHashMap<>();
+
+        categories.forEach(category -> {
+            openPage();
+            clickCategoryFilter(category);
+            int count = getProductCardCount();
+            results.put(category, count);
+            log.info("[PLP_001] Category: {} → {} product(s) on page 1", category, count);
+        });
+
+        log.info("[PLP_001] Summary:");
+        results.forEach((cat, cnt) -> log.info("  {}: {}", cat, cnt));
+
+        return results;
+    }
+
+    public Map<String, ProductDetails> getHighestRatedProductPerCategory(List<String> categories) {
+        return categories.stream()
+                .collect(Collectors.toMap(
+                        category -> category,
+                        category -> {
+                            openPage();
+                            clickCategoryFilter(category);
+                            return findHighestRatedProductInCurrentCategory();
+                        },
+                        (existing, replacement) -> existing,
+                        LinkedHashMap::new
+                ));
+    }
+
+    private ProductDetails findHighestRatedProductInCurrentCategory() {
+        int totalPages = getTotalPages();
+
+        Optional<ProductDetails> maxProduct = IntStream.rangeClosed(1, totalPages)
+                .mapToObj(p -> getProductCardsDetails()) // simplified for debug
+                .flatMap(List::stream)
+                .max(Comparator.comparingDouble(ProductDetails::getRating));
+
+// If this line stays red, the issue is your Constructor or Return Type
+        return maxProduct.orElse(new ProductDetails("No Product Found", 0.0));
+    }
+
+    public List getProductCardsDetails() {
+        return getProductCards().stream()
+                .map(this::extractProductDetailsFromCard)
+                .collect(Collectors.toList());
+    }
+
+    private ProductDetails extractProductDetailsFromCard(WebElement cardElement) {
+        String name = getProductName(cardElement);
+        double rating = getProductRating(cardElement);
+        return new ProductDetails(name, rating);
     }
 }

@@ -31,19 +31,8 @@ public class NewTests extends BaseTest {
     public void stupidname() throws InterruptedException {
         Map<String, Integer> results = new LinkedHashMap<>();
 
-        for (String category : KNOWN_CATEGORIES) {
-            // Re-open to reset any previous filter
-            page.openPage();
-            Thread.sleep(5000);
-            page.clickCategoryFilter(category);
+        Map<String, Integer> categoryProductCounts = page.collectProductCountsForCategories(KNOWN_CATEGORIES);
 
-            int count = page.getProductCards().size();
-            results.put(category, count);
-
-            System.out.printf("[PLP_001] Category: %-15s → %d product(s) on page 1%n",
-                    category, count);
-
-        }
 
         System.out.println("\n[PLP_001] Summary:");
         results.forEach((cat, cnt) -> System.out.printf("  %-15s : %d%n", cat, cnt));
