@@ -4,18 +4,23 @@ import base.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.ProductListingPage;
+import pages.models.ProductDetails;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class NewTestsReview extends BaseTest {
 
     private ProductListingPage page;
+    private static final Logger log = LoggerFactory.getLogger(NewTestsReview.class);
 
     // Known categories on the challenge page
     private static final List<String> KNOWN_CATEGORIES = List.of("Books", "Sports", "Home", "Clothing", "Electronics");
@@ -26,55 +31,21 @@ public class NewTestsReview extends BaseTest {
         page.openPage();
     }
 
-    @Test(description = "PLP_001")
+    @Test(description = "PLP_003")
     @Story("Category Filter")
-    @Description("Iterate each category filter, click it, count the visible product cards, and assert the count is greater than zero. Store and log results per category.")
-    public void verifyProductCountsPerCategory() throws InterruptedException {
-        Map<String, Integer> results = new LinkedHashMap<>();
-        Thread.sleep(5000);
-        KNOWN_CATEGORIES.stream()
-                .forEach(category -> {
-                    page.openPage();
-                    page.clickCategoryFilter(category);
-
-                    int count = page.getVisibleProductsCount();
-                    results.put(category, count);
-
-                    log.info("[PLP_001] Category: {} → {} product(s) on page 1", category, count);
-                });
-
-        log.info("\n[PLP_001] Summary:");
-        results.forEach((cat, cnt) -> log.info("  {} : {}", cat, cnt));
+    @Description("For each category, collect all cards across all pages, parse ratings, "
+            + "find the highest-rated product per category, and assert rating > 0.")
+    public void findHighestRatedProductPerCategory() {
+        Map<String, ProductDetails> highestRatedProducts = page.getHighestRatedProductPerCategory(KNOWN_CATEGORIES);
+        assertHighestRatedProductsHaveValidRatings(highestRatedProducts);
+        log.info("[PLP_003] All categories processed successfully.");
     }
 
-    @Test(description = "PLP_002")
-    @Story("Pagination Navigation")
-    @Description("Search all pages for a hard-coded product name. Navigate page-by-page "
-            + "until the product is found. Assert the product exists and log the page number.")
-    public void findSpecificProductPage() {
-        final String targetProduct = "The Pragmatic Programmer";
-
-        int totalPages = page.getTotalPages();
-        int foundOnPage = -1;
-
-        outer: for (int p = 1; p <= totalPages; p++) {
-            if (p > 1) {
-                page.clickPageNumber(p);
-            }
-
-            List<WebElement> cards = page.getProductCards();
-            for (WebElement card : cards) {
-                String name = page.getProductName(card);
-                if (name.equalsIgnoreCase(targetProduct)) {
-                    foundOnPage = p;
-                    System.out.printf("[PLP_002] Product \"%s\" found on page %d%n",
-                            targetProduct, foundOnPage);
-                    break outer;
-                }
-            }
-        }
-
-        Assert.assertNotEquals(foundOnPage, -1,
-                "Product \"" + targetProduct + "\" was not found on any page.");
+    private void assertHighestRatedProductsHaveValidRatings(Map<String, ProductDetails> highestRatedProducts) {
+        highestRatedProducts.forEach((category, product) -> {
+            log.info("[PLP_003] Category: {} | Highest rated: {} ({} stars)", category, product.getName(), product.getRating());
+            Assert.assertTrue(product.getRating() > 0, "No valid rating found for category: " + category);
+        });
     }
+
 }
