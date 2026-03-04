@@ -1,0 +1,42 @@
+name: AI PR Reviewer
+
+# Trigger this action whenever a Pull Request is opened or updated
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    # We need to give the Action permission to write comments on the PR
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+            path: ~/.cache/pip
+            key: ${{ runner.os }}-pip-${{ hashFiles('ai-pr-reviewer/requirements.txt') }}
+            restore-keys: |
+              ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: pip install -r ai-pr-reviewer/requirements.txt
+
+      - name: Run AI Reviewer
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Provided automatically by GitHub
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} # You must add this to Repo Secrets!
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: python ai-pr-reviewer/src/main.py
