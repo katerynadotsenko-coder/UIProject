@@ -24,9 +24,13 @@ class AIReviewer:
                             "line": {"type": "INTEGER"},
                             "rule": {"type": "STRING"},
                             "description": {"type": "STRING"},
-                            "code": {"type": "STRING"} # 🗑️ Removed extracted_methods here
+                            # 🚨 THE FIX IS RIGHT HERE:
+                            "code": {
+                                "type": "STRING",
+                                "description": "The FULL, COMPLETE, ready-to-paste Java method. MUST include the method signature, all unmodified lines, and the applied fixes. NEVER output partial snippets or single lines."
+                            }
                         },
-                        "required": ["line", "rule", "description", "code"] # 🗑️ Removed here too
+                        "required": ["line", "rule", "description", "code"]
                     }
                 }
             },
