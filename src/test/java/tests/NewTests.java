@@ -46,28 +46,39 @@ public class NewTests extends BaseTest {
     }
 
 
-    public ProductDetails findMostExpensiveProductIn(String category) {
-        double maxPrice = 0;
-        String maxProductName = "";
-
+    // Method to collect all product details for a given category across all pages
+    public List<ProductDetails> collectProductDetailsForCategory(String category) {
+        List <ProductDetails> products = new java.util.ArrayList<>();
         int totalPages = page.getTotalPages();
-
         for (int p = 1; p <= totalPages; p++) {
-            if (p >= 1) {
-                page.clickPageNumber(p);
-            }
+            page.clickPageNumber(p);
             for (WebElement card : page.getProductCards()) {
-                double price = page.getProductPriceAsDouble(card);
                 String cardCategory = page.getProductCategory(card);
-
-                if (price > maxPrice && cardCategory.contains(category)) {
-                    maxPrice = price;
-                    maxProductName = page.getProductName(card);
+                if (cardCategory.contains(category)) {
+                    String name = page.getProductName(card);
+                    double price = page.getProductPriceAsDouble(card);
+                    products.add(new ProductDetails(name, 0, price, category));
                 }
             }
         }
+        return products;
+    }
 
-        return new ProductDetails(maxProductName, 0, maxPrice, category);
+    // Method to find the most expensive product from a list of ProductDetails
+    public ProductDetails findMostExpensiveProductFromList(List<ProductDetails> products) {
+        ProductDetails mostExpensive = new ProductDetails("", 0, 0, ""); // Default to handle empty list
+        for (ProductDetails product : products) {
+            if (product.getPrice() > mostExpensive.getPrice()) {
+                mostExpensive = product;
+            }
+        }
+        return mostExpensive;
+    }
+
+    // Refactored findMostExpensiveProductIn
+    public ProductDetails findMostExpensiveProductIn(String category) {
+        List<ProductDetails> productsInCategory = collectProductDetailsForCategory(category);
+        return findMostExpensiveProductFromList(productsInCategory);
     }
 }
 
