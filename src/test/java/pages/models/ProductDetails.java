@@ -17,4 +17,10 @@ public class ProductDetails {
         this.name = name;
         this.rating = rating;
     }
+
+    public ProductDetails(String name, double price, String category) {
+        this.name = name;
+        this.price = price;
+        this.category = category;
+    }
 }

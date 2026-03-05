@@ -15,6 +15,7 @@ import pages.models.ProductDetails;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 public class NewTests extends BaseTest {
 
@@ -50,17 +51,18 @@ public class NewTests extends BaseTest {
     public List<ProductDetails> collectProductDetailsForCategory(String category) {
         List <ProductDetails> products = new java.util.ArrayList<>();
         int totalPages = page.getTotalPages();
-        for (int p = 1; p <= totalPages; p++) {
-            page.clickPageNumber(p);
+
+        IntStream.range(1, totalPages).forEach(pageNumber->{
+            page.clickPageNumber(pageNumber);
             for (WebElement card : page.getProductCards()) {
                 String cardCategory = page.getProductCategory(card);
                 if (cardCategory.contains(category)) {
                     String name = page.getProductName(card);
                     double price = page.getProductPriceAsDouble(card);
-                    products.add(new ProductDetails(name, 0, price, category));
+                    products.add(new ProductDetails(name, price, category));
                 }
             }
-        }
+        });
         return products;
     }
 
