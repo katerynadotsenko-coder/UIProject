@@ -38,7 +38,7 @@ public class NewTests extends BaseTest {
         for (String category : KNOWN_CATEGORIES) {
 
             ProductDetails productInfo = findMostExpensiveProductIn(category);
-            log.info("[PLP_004] Category: {} | Most expensive: {} (${.2f})", productInfo.getCategory(), productInfo.getName(), productInfo.getPrice());
+            log.info("[PLP_004] Category: {} | Most expensive: {} | Name: {}", productInfo.getCategory(), productInfo.getPrice(), productInfo.getName());
             Assert.assertTrue(productInfo.getPrice() > 0,
                     "No valid price found for category: " + category);
         }
@@ -47,26 +47,27 @@ public class NewTests extends BaseTest {
 
 
     public ProductDetails findMostExpensiveProductIn(String category) {
-        ProductDetails productDetails=new ProductDetails("", 0, -1, category);
-        double maxPrice = productDetails.getPrice();
-        String maxProductName = productDetails.getName();
+        double maxPrice = 0;
+        String maxProductName = "";
 
         int totalPages = page.getTotalPages();
-        for (int p = 1; p <= totalPages; p++) {
-            if (p > 1)
-                page.clickPageNumber(p);
 
+        for (int p = 1; p <= totalPages; p++) {
+            if (p >= 1) {
+                page.clickPageNumber(p);
+            }
             for (WebElement card : page.getProductCards()) {
                 double price = page.getProductPriceAsDouble(card);
-                if (price > maxPrice) {
+                String cardCategory = page.getProductCategory(card);
+
+                if (price > maxPrice && cardCategory.contains(category)) {
                     maxPrice = price;
                     maxProductName = page.getProductName(card);
-                    productDetails.setPrice(maxPrice);
-                    productDetails.setName(maxProductName);
                 }
             }
         }
-        return productDetails;
+
+        return new ProductDetails(maxProductName, 0, maxPrice, category);
     }
 }
 
