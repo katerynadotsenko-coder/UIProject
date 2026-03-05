@@ -4,10 +4,13 @@ import base.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.ProductListingPage;
+import pages.models.ProductDetails;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +22,7 @@ public class NewTests extends BaseTest {
 
     // Known categories on the challenge page
     private static final List<String> KNOWN_CATEGORIES = List.of("Books", "Sports", "Home", "Clothing", "Electronics");
+    private static final Logger log = LoggerFactory.getLogger(NewTests.class);
 
     @BeforeMethod(alwaysRun = true)
     public void openChallengePage() {
@@ -32,34 +36,37 @@ public class NewTests extends BaseTest {
             + "find the most expensive product per category, and assert price > 0.")
     public void findMostExpensiveProductPerCategory() {
         for (String category : KNOWN_CATEGORIES) {
-            page.openPage();
-            page.clickCategoryFilter(category);
 
-            double maxPrice = -1;
-            String maxProductName = "";
-
-            int totalPages = page.getTotalPages();
-            for (int p = 1; p <= totalPages; p++) {
-                if (p > 1)
-                    page.clickPageNumber(p);
-
-                for (WebElement card : page.getProductCards()) {
-                    double price = page.getProductPriceAsDouble(card);
-                    if (price > maxPrice) {
-                        maxPrice = price;
-                        maxProductName = page.getProductName(card);
-                    }
-                }
-            }
-
-            System.out.printf("[PLP_004] Category: %-15s | Most expensive: %-40s ($%.2f)%n",
-                    category, maxProductName, maxPrice);
-
-            Assert.assertTrue(maxPrice > 0,
+            ProductDetails productInfo = findMostExpensiveProductIn(category);
+            log.info("[PLP_004] Category: {} | Most expensive: {} (${.2f})", productInfo.getCategory(), productInfo.getName(), productInfo.getPrice());
+            Assert.assertTrue(productInfo.getPrice() > 0,
                     "No valid price found for category: " + category);
         }
-
-        System.out.println("[PLP_004] All categories processed successfully.");
+        log.info("[PLP_004] All categories processed successfully.");
     }
 
+
+    public ProductDetails findMostExpensiveProductIn(String category) {
+        ProductDetails productDetails=new ProductDetails("", 0, -1, category);
+        double maxPrice = productDetails.getPrice();
+        String maxProductName = productDetails.getName();
+
+        int totalPages = page.getTotalPages();
+        for (int p = 1; p <= totalPages; p++) {
+            if (p > 1)
+                page.clickPageNumber(p);
+
+            for (WebElement card : page.getProductCards()) {
+                double price = page.getProductPriceAsDouble(card);
+                if (price > maxPrice) {
+                    maxPrice = price;
+                    maxProductName = page.getProductName(card);
+                    productDetails.setPrice(maxPrice);
+                    productDetails.setName(maxProductName);
+                }
+            }
+        }
+        return productDetails;
+    }
 }
+
