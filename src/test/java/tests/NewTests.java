@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 import pages.ProductListingPage;
 import pages.models.ProductDetails;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,40 +47,15 @@ public class NewTests extends BaseTest {
         log.info("[PLP_004] All categories processed successfully.");
     }
 
-
-    // Method to collect all product details for a given category across all pages
-    public List<ProductDetails> collectProductDetailsForCategory(String category) {
-        List <ProductDetails> products = new java.util.ArrayList<>();
-        int totalPages = page.getTotalPages();
-
-        IntStream.range(1, totalPages).forEach(pageNumber->{
-            page.clickPageNumber(pageNumber);
-            for (WebElement card : page.getProductCards()) {
-                String cardCategory = page.getProductCategory(card);
-                if (cardCategory.contains(category)) {
-                    String name = page.getProductName(card);
-                    double price = page.getProductPriceAsDouble(card);
-                    products.add(new ProductDetails(name, price, category));
-                }
-            }
-        });
-        return products;
-    }
-
-    // Method to find the most expensive product from a list of ProductDetails
     public ProductDetails findMostExpensiveProductFromList(List<ProductDetails> products) {
-        ProductDetails mostExpensive = new ProductDetails("", 0, 0, ""); // Default to handle empty list
-        for (ProductDetails product : products) {
-            if (product.getPrice() > mostExpensive.getPrice()) {
-                mostExpensive = product;
-            }
-        }
-        return mostExpensive;
+        return products.stream()
+                .max(Comparator.comparingDouble(ProductDetails::getPrice))
+                .orElse(new ProductDetails("", 0, 0, "")); // Or throw an exception if an empty list is an error
     }
 
-    // Refactored findMostExpensiveProductIn
+
     public ProductDetails findMostExpensiveProductIn(String category) {
-        List<ProductDetails> productsInCategory = collectProductDetailsForCategory(category);
+        List<ProductDetails> productsInCategory = page.collectProductDetailsForCategory(category);
         return findMostExpensiveProductFromList(productsInCategory);
     }
 }

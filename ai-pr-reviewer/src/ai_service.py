@@ -24,10 +24,9 @@ class AIReviewer:
                             "line": {"type": "INTEGER"},
                             "rule": {"type": "STRING"},
                             "description": {"type": "STRING"},
-                            "code": {"type": "STRING"},
-                            "extracted_methods": {"type": "STRING"}
+                            "code": {"type": "STRING"} # 🗑️ Removed extracted_methods here
                         },
-                        "required": ["line", "rule", "description", "code", "extracted_methods"]
+                        "required": ["line", "rule", "description", "code"] # 🗑️ Removed here too
                     }
                 }
             },
@@ -76,8 +75,6 @@ class AIReviewer:
                     f"{issue.get('description')}\n\n"
                     f"### 🛠️ RECOMMENDED FIX\n```java\n{issue.get('code')}\n```\n"
                 )
-                if issue.get('extracted_methods'):
-                    body += f"### 📦 EXTRACTED METHODS\n{issue.get('extracted_methods')}\n"
 
                 if line in valid_lines:
                     inline_comments.append({"path": file_path, "line": line, "body": body})

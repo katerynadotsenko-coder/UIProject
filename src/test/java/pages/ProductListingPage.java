@@ -322,7 +322,7 @@ public class ProductListingPage {
 
         return allProductsInCurrentCategory.stream()
                 .max(Comparator.comparingDouble(ProductDetails::getRating))
-                .orElse(new ProductDetails("No Product Found", 0.0));
+                .orElse( ProductDetails.builder().name("No Product Found").price(0.00).build());
     }
 
     public List<ProductDetails> getProductCardsDetails() {
@@ -334,6 +334,25 @@ public class ProductListingPage {
     private ProductDetails extractProductDetailsFromCard(WebElement cardElement) {
         String name = getProductName(cardElement);
         double rating = getProductRating(cardElement);
-        return new ProductDetails(name, rating);
+        return  ProductDetails.builder().name(name).rating(rating).build();
+    }
+
+    // Method to collect all product details for a given category across all pages
+    public List<ProductDetails> collectProductDetailsForCategory(String category) {
+        List <ProductDetails> products = new java.util.ArrayList<>();
+        int totalPages = getTotalPages();
+
+        IntStream.rangeClosed(1, totalPages).forEach(pageNumber->{
+           clickPageNumber(pageNumber);
+            for (WebElement card :getProductCards()) {
+                String cardCategory = getProductCategory(card);
+                if (cardCategory.contains(category)) {
+                    String name = getProductName(card);
+                    double price = getProductPriceAsDouble(card);
+                    products.add(ProductDetails.builder().name(name).price(price).category(category).build());
+                }
+            }
+        });
+        return products;
     }
 }
