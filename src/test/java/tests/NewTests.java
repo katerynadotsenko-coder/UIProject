@@ -26,18 +26,16 @@ public class NewTests extends BaseTest {
         page.openPage();
     }
 
-    @Test(description = "PLP_003")
+    @Test(description = "PLP_004")
     @Story("Category Filter")
-    @Description("For each category, collect all cards across all pages, parse ratings, "
-            + "find the highest-rated product per category, and assert rating > 0.")
-    public void findHighestRatedProductPerCategory() {
-        Map<String, double[]> results = new LinkedHashMap<>(); // category → [rating, page]
-
+    @Description("For each category, collect all cards across all pages, parse prices, "
+            + "find the most expensive product per category, and assert price > 0.")
+    public void findMostExpensiveProductPerCategory() {
         for (String category : KNOWN_CATEGORIES) {
             page.openPage();
             page.clickCategoryFilter(category);
 
-            double maxRating = -1;
+            double maxPrice = -1;
             String maxProductName = "";
 
             int totalPages = page.getTotalPages();
@@ -46,23 +44,22 @@ public class NewTests extends BaseTest {
                     page.clickPageNumber(p);
 
                 for (WebElement card : page.getProductCards()) {
-                    double rating = page.getProductRating(card);
-                    if (rating > maxRating) {
-                        maxRating = rating;
+                    double price = page.getProductPriceAsDouble(card);
+                    if (price > maxPrice) {
+                        maxPrice = price;
                         maxProductName = page.getProductName(card);
                     }
                 }
             }
 
-            System.out.printf("[PLP_003] Category: %-15s | Highest rated: %-40s (%.1f stars)%n",
-                    category, maxProductName, maxRating);
+            System.out.printf("[PLP_004] Category: %-15s | Most expensive: %-40s ($%.2f)%n",
+                    category, maxProductName, maxPrice);
 
-            Assert.assertTrue(maxRating > 0,
-                    "No valid rating found for category: " + category);
-
-            results.put(category, new double[] { maxRating });
+            Assert.assertTrue(maxPrice > 0,
+                    "No valid price found for category: " + category);
         }
 
-        System.out.println("[PLP_003] All categories processed successfully.");
+        System.out.println("[PLP_004] All categories processed successfully.");
     }
+
 }
