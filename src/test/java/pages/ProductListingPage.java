@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pages.models.ProductDetails;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -317,12 +318,12 @@ public class ProductListingPage {
                     clickPageNumber(pageNumber);
                     return getProductCardsDetails();
                 })
-                .<ProductDetails>flatMap(Collection::stream) // Add <ProductDetails> here
+                .flatMap(Collection::stream)
                 .toList();
 
         return allProductsInCurrentCategory.stream()
                 .max(Comparator.comparingDouble(ProductDetails::getRating))
-                .orElse(new ProductDetails("No Product Found", 0.0));
+                .orElse(ProductDetails.builder().name("No Product Found").price(BigDecimal.valueOf(0)).rating(0.0).category("N/A").build());
     }
 
     public List<ProductDetails> getProductCardsDetails() {
@@ -332,8 +333,28 @@ public class ProductListingPage {
     }
 
     private ProductDetails extractProductDetailsFromCard(WebElement cardElement) {
-        String name = getProductName(cardElement);
-        double rating = getProductRating(cardElement);
-        return new ProductDetails(name, rating);
+// 1. Get the raw string from the UI (e.g., "$29.99")
+        String rawPrice = getProductPrice(cardElement);
+
+        // 2. Sanitize: Remove everything EXCEPT digits 0-9 and the decimal point
+        String cleanPrice = rawPrice.replaceAll("[^0-9.]", "");
+        return ProductDetails.builder()
+                .name(getProductName(cardElement))
+                .rating(getProductRating(cardElement))
+                .category(getProductCategory(cardElement))
+                .price(new BigDecimal(cleanPrice)).build();
+    }
+
+    public List<ProductDetails> collectProductDetailsForAllCategories() {
+        List<ProductDetails> products = new java.util.ArrayList<>();
+        int totalPages = getTotalPages();
+
+        IntStream.rangeClosed(1, totalPages).forEach(pageNumber -> {
+            clickPageNumber(pageNumber);
+            // After filtering and navigating to the page, all cards should be of the selected category.
+            // Use getProductCardsDetails() to get fully populated ProductDetails objects.
+            products.addAll(getProductCardsDetails());
+        });
+        return products;
     }
 }

@@ -24,10 +24,13 @@ class AIReviewer:
                             "line": {"type": "INTEGER"},
                             "rule": {"type": "STRING"},
                             "description": {"type": "STRING"},
-                            "code": {"type": "STRING"},
-                            "extracted_methods": {"type": "STRING"}
+                            # 🚨 THE FIX IS RIGHT HERE:
+                            "code": {
+                                "type": "STRING",
+                                "description": "The FULL, COMPLETE, ready-to-paste Java method. MUST include the method signature, all unmodified lines, and the applied fixes. NEVER output partial snippets or single lines."
+                            }
                         },
-                        "required": ["line", "rule", "description", "code", "extracted_methods"]
+                        "required": ["line", "rule", "description", "code"]
                     }
                 }
             },
@@ -76,8 +79,6 @@ class AIReviewer:
                     f"{issue.get('description')}\n\n"
                     f"### 🛠️ RECOMMENDED FIX\n```java\n{issue.get('code')}\n```\n"
                 )
-                if issue.get('extracted_methods'):
-                    body += f"### 📦 EXTRACTED METHODS\n{issue.get('extracted_methods')}\n"
 
                 if line in valid_lines:
                     inline_comments.append({"path": file_path, "line": line, "body": body})
