@@ -12,10 +12,8 @@ import org.testng.annotations.Test;
 import pages.ProductListingPage;
 import pages.models.ProductDetails;
 
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class NewTests extends BaseTest {
@@ -37,26 +35,29 @@ public class NewTests extends BaseTest {
     @Description("For each category, collect all cards across all pages, parse prices, "
             + "find the most expensive product per category, and assert price > 0.")
     public void findMostExpensiveProductPerCategory() {
+        List<ProductDetails> productsInCategory = page.collectProductDetailsForAllCategories();
         for (String category : KNOWN_CATEGORIES) {
-
-            ProductDetails productInfo = findMostExpensiveProductIn(category);
+            ProductDetails productInfo = findMostExpensiveProductIn(category, productsInCategory);
             log.info("[PLP_004] Category: {} | Most expensive: {} | Name: {}", productInfo.getCategory(), productInfo.getPrice(), productInfo.getName());
-            Assert.assertTrue(productInfo.getPrice() > 0,
-                    "No valid price found for category: " + category);
+            Assert.assertTrue(
+                    productInfo.getPrice().compareTo(BigDecimal.ZERO) > 0,
+                    "No valid price found for category: " + category
+            );
         }
         log.info("[PLP_004] All categories processed successfully.");
     }
 
-    public ProductDetails findMostExpensiveProductFromList(List<ProductDetails> products) {
+    public Optional<ProductDetails> findMostExpensiveProductFromList(List<ProductDetails> products) {
         return products.stream()
-                .max(Comparator.comparingDouble(ProductDetails::getPrice))
-                .orElse(new ProductDetails("", 0, 0, "")); // Or throw an exception if an empty list is an error
+                .max(Comparator.comparing(ProductDetails::getPrice));
     }
 
 
-    public ProductDetails findMostExpensiveProductIn(String category) {
-        List<ProductDetails> productsInCategory = page.collectProductDetailsForCategory(category);
-        return findMostExpensiveProductFromList(productsInCategory);
+    public ProductDetails findMostExpensiveProductIn(String category, List<ProductDetails> products) {
+
+        List<ProductDetails> filtered=products.stream().filter(product->product.getCategory().contains(category)).toList();
+        return findMostExpensiveProductFromList(filtered)
+                .orElseThrow(() -> new IllegalStateException("No products found in category: " + category));
     }
 }
 
