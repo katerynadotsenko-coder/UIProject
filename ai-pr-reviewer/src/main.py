@@ -1,5 +1,7 @@
 import os
 import yaml
+import time # 🛡️ Added this to prevent the rate limit crash
+
 from parser import PatchParser
 from github_service import GitHubClient
 from ai_service import AIReviewer
@@ -38,12 +40,18 @@ def main():
 
     for f in files:
         path = f['filename']
-        # We can make this dynamic later based on the config file
-        if "patch" not in f: continue
+
+        # 🛡️ THE FIX 1: Only review actual Java files, ignore configs and scripts
+        # Notice how all of this is indented inside the 'for' loop!
+        if not path.endswith(".java") or "patch" not in f:
+            continue
 
         print(f"🔎 Analyzing {path}...")
         valid_lines = PatchParser.get_valid_lines(f['patch'])
         content = gh.get_file_content(f['raw_url'])
+
+        # 🛡️ THE FIX 2: Sleep for 4 seconds before calling Gemini to respect free-tier limits
+        time.sleep(4)
 
         results = ai.analyze_code(path, content, valid_lines)
         all_inline.extend(results["inline"])
@@ -52,6 +60,7 @@ def main():
             has_general = True
             master_general += results["general"]
 
+    # 🛡️ Now we drop back out of the loop
     if not all_inline and not has_general:
         print("✅ No issues found! LGTM.")
         return

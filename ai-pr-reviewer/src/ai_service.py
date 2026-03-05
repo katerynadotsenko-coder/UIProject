@@ -1,4 +1,5 @@
 import json
+import sys
 from typing import Dict, Set, Any
 from google import genai
 from google.genai import types
@@ -36,7 +37,7 @@ class AIReviewer:
     def analyze_code(self, file_path: str, content: str, valid_lines: Set[int]) -> Dict:
         numbered_lines = [f"{i + 1} | {line}" for i, line in enumerate(content.split('\n'))]
         numbered_content = "\n".join(numbered_lines)
-        user_prompt = f"FILE ( {file_path} ):\n```\n{numbered_content}\n```"
+        user_prompt = f"FILE ( {file_path} ):\n```java\n{numbered_content}\n```"
 
         try:
             response = self.client.models.generate_content(
@@ -50,7 +51,19 @@ class AIReviewer:
                 )
             )
 
-            parsed_json = json.loads(response.text)
+            # --- DEBUG LINES ---
+            print(f"RAW AI RESPONSE FOR {file_path}:")
+            print(response.text)
+            print("--------------------------------------------------")
+
+            # Strip markdown formatting just in case
+            cleaned_text = response.text.strip()
+            if cleaned_text.startswith("```json"):
+                cleaned_text = cleaned_text.removeprefix("```json").removesuffix("```").strip()
+            elif cleaned_text.startswith("```"):
+                cleaned_text = cleaned_text.removeprefix("```").removesuffix("```").strip()
+
+            parsed_json = json.loads(cleaned_text)
             raw_issues = parsed_json.get("issues", [])
 
             inline_comments = []
@@ -68,10 +81,19 @@ class AIReviewer:
 
                 if line in valid_lines:
                     inline_comments.append({"path": file_path, "line": line, "body": body})
-                else: general_feedback += f"\n**File:** `{file_path}` (Line {line})\n{body}\n---"
+                else:
+                    general_feedback += f"\n**File:** `{file_path}` (Line {line})\n{body}\n---"
 
             return {"inline": inline_comments, "general": general_feedback}
 
         except Exception as e:
-            print(f"💥 AI Error for {file_path}: {e}")
+            error_msg = str(e)
+            print(f"💥 AI Error for {file_path}: {repr(e)}")
+
+            # 🚨 Check if it's a Rate Limit error
+            if "429" in error_msg or "RESOURCE_EXHAUSTED" in error_msg:
+                print("❌ FATAL: Gemini API Rate Limit Exceeded. Failing the GitHub Action!")
+                sys.exit(1) # This forces the GitHub Action step to turn RED
+
+            # For other minor errors, return empty so the rest of the files can be checked
             return {"inline": [], "general": ""}

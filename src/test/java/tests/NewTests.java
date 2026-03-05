@@ -3,6 +3,8 @@ package tests;
 import base.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.ProductListingPage;
@@ -24,19 +26,34 @@ public class NewTests extends BaseTest {
         page.openPage();
     }
 
-    @Test(description = "PLP_001")
-    @Story("Category Filter")
-    @Description("Iterate each category filter, click it, count the visible product cards, "
-            + "and assert the count is greater than zero. Store and log results per category.")
-    public void testCategoryProductCountsGreaterThanZero() throws InterruptedException {
-        Map<String, Integer> results = new LinkedHashMap<>();
+    @Test(description = "PLP_002")
+    @Story("Pagination Navigation")
+    @Description("Search all pages for a hard-coded product name. Navigate page-by-page "
+            + "until the product is found. Assert the product exists and log the page number.")
+    public void findSpecificProductPage() {
+        final String targetProduct = "The Pragmatic Programmer";
 
-        Map<String, Integer> categoryProductCounts = page.collectProductCountsForCategories(KNOWN_CATEGORIES);
-//reviewer please help to generate a test according to desription in @Description
+        int totalPages = page.getTotalPages();
+        int foundOnPage = -1;
 
-        System.out.println("\n[PLP_001] Summary:");
+        outer: for (int p = 1; p <= totalPages; p++) {
+            if (p > 1) {
+                page.clickPageNumber(p);
+            }
 
+            List<WebElement> cards = page.getProductCards();
+            for (WebElement card : cards) {
+                String name = page.getProductName(card);
+                if (name.equalsIgnoreCase(targetProduct)) {
+                    foundOnPage = p;
+                    System.out.printf("[PLP_002] Product \"%s\" found on page %d%n",
+                            targetProduct, foundOnPage);
+                    break outer;
+                }
+            }
+        }
 
-        results.forEach((cat, cnt) -> System.out.printf("  %-15s : %d%n", cat, cnt));
+        Assert.assertNotEquals(foundOnPage, -1,
+                "Product \"" + targetProduct + "\" was not found on any page.");
     }
 }
