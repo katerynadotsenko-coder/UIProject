@@ -32,7 +32,7 @@ public class BaseTest {
 
         ChromeOptions options = new ChromeOptions();
         // Run headless on CI environments; comment out for local debugging
-        // options.addArguments("--headless=new");
+        options.addArguments("--headless=new");
         options.addArguments("--window-size=1920,1080");
         options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
