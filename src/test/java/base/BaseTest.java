@@ -1,20 +1,26 @@
 package base;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.qameta.allure.Allure;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
 import utils.ScreenshotUtils;
 
+import java.io.ByteArrayInputStream;
 import java.time.Duration;
 
 /**
  * Base class for all test classes.
  * Handles WebDriver lifecycle: setup before each test and teardown after.
  */
+
 public class BaseTest {
 
     protected WebDriver driver;
@@ -37,14 +43,18 @@ public class BaseTest {
         driver.manage().window().maximize();
     }
 
+    public WebDriver getDriver() {
+        return this.driver; // Make sure 'driver' matches the exact name of your WebDriver variable
+    }
+
     @AfterMethod(alwaysRun = true)
-    public void tearDown(ITestResult result) throws InterruptedException {
-        // Capture screenshot on test failure and attach to Allure report
+    public void tearDown(ITestResult result) {
         if (result.getStatus() == ITestResult.FAILURE && driver != null) {
-            ScreenshotUtils.capture(driver, result.getName());
+            byte[] screenshotBytes = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+            Allure.addAttachment("Failure Screenshot", "image/png",
+                    new ByteArrayInputStream(screenshotBytes), "png");
         }
         if (driver != null) {
-            System.out.println("Quitting!!");
             driver.quit();
         }
     }

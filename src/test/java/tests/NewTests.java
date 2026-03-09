@@ -2,6 +2,7 @@ package tests;
 
 import base.BaseTest;
 import io.qameta.allure.Description;
+import io.qameta.allure.Step;
 import io.qameta.allure.Story;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
@@ -35,9 +36,9 @@ public class NewTests extends BaseTest {
     @Description("For each category, collect all cards across all pages, parse prices, "
             + "find the most expensive product per category, and assert price > 0.")
     public void findMostExpensiveProductPerCategory() {
-        List<ProductDetails> productsInCategory = page.collectProductDetailsForAllCategories();
+        List<ProductDetails> allCategoriesProducts = page.collectProductDetailsForAllCategories();
         for (String category : KNOWN_CATEGORIES) {
-            ProductDetails productInfo = findMostExpensiveProductIn(category, productsInCategory);
+            ProductDetails productInfo = findMostExpensiveProductIn(category, allCategoriesProducts);
             log.info("[PLP_004] Category: {} | Most expensive: {} | Name: {}", productInfo.getCategory(), productInfo.getPrice(), productInfo.getName());
             Assert.assertTrue(
                     productInfo.getPrice().compareTo(BigDecimal.ZERO) > 0,
@@ -52,7 +53,7 @@ public class NewTests extends BaseTest {
                 .max(Comparator.comparing(ProductDetails::getPrice));
     }
 
-
+    @Step("Find the most expensive product in category {category}")
     public ProductDetails findMostExpensiveProductIn(String category, List<ProductDetails> products) {
 
         List<ProductDetails> filtered=products.stream().filter(product->product.getCategory().contains(category)).toList();
