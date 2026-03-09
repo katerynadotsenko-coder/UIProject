@@ -239,7 +239,7 @@ public class ProductListingTest extends BaseTest {
 
         for (WebElement card : cards) {
             String name = page.getProductName(card);
-            String price = page.getProductPrice(card);
+            String price = String.valueOf(page.getProductPrice(card));
             double rating = page.getProductRating(card);
             String cat = page.getProductCategoryName(card);
 

@@ -78,28 +78,32 @@ public class AllureAiRunner {
 
                 byte[] screenshotBytes = extractScreenshotFromGeneratedReport(rootNode, attachmentsDir);
                 String aiAdvice;
+                try {
+                    if (screenshotBytes != null) {
+                        // 1. Prepare the Image
+                        dev.langchain4j.data.message.ImageContent imageContent =
+                                dev.langchain4j.data.message.ImageContent.from(
+                                        Base64.getEncoder().encodeToString(screenshotBytes), "image/png"
+                                );
 
-                if (screenshotBytes != null) {
-                    // 1. Prepare the Image
-                    dev.langchain4j.data.message.ImageContent imageContent =
-                            dev.langchain4j.data.message.ImageContent.from(
-                                    Base64.getEncoder().encodeToString(screenshotBytes), "image/png"
-                            );
+                        dev.langchain4j.data.message.TextContent textContent =
+                                dev.langchain4j.data.message.TextContent.from(
+                                        "JSON: " + rootNode.toString() +
+                                                "\nAnalyze this JSON and the attached screenshot strictly following the system rules."
+                                );
 
-                    dev.langchain4j.data.message.TextContent textContent =
-                            dev.langchain4j.data.message.TextContent.from(
-                                    "JSON: " + rootNode.toString() +
-                                            "\nAnalyze this JSON and the attached screenshot strictly following the system rules."
-                            );
+                        // 3. Combine them into a single UserMessage
+                        dev.langchain4j.data.message.UserMessage multimodalMsg =
+                                dev.langchain4j.data.message.UserMessage.from(textContent, imageContent);
 
-                    // 3. Combine them into a single UserMessage
-                    dev.langchain4j.data.message.UserMessage multimodalMsg =
-                            dev.langchain4j.data.message.UserMessage.from(textContent, imageContent);
-
-                    // 4. Send to Gemini!
-                    aiAdvice = analyst.analyzeWithScreenshot(multimodalMsg);
-                } else {
-                    aiAdvice = analyst.analyzeReport(rootNode.toString());
+                        // 4. Send to Gemini!
+                        aiAdvice = analyst.analyzeWithScreenshot(multimodalMsg);
+                    } else {
+                        aiAdvice = analyst.analyzeReport(rootNode.toString());
+                    }
+                } catch (Exception e) {
+                    System.out.println("⚠️ AI API call failed (likely rate limit exceeded): " + e.getMessage());
+                    aiAdvice = "⚠️ **AI AQA Assistant:** Analysis unavailable. Gemini API rate limit exceeded or a network error occurred.";
                 }
                 // 4. Inject the advice into this generated JSON file
                 AllureInjectedAnalyst.injectAiAdvice(file, aiAdvice);
