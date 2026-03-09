@@ -1,5 +1,6 @@
 package pages;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -300,26 +301,23 @@ public class ProductListingPage {
         return results;
     }
 
-    public Map<String, ProductDetails> getHighestRatedProductPerCategory(List<String> categories) {
+    @Step("Get the product with the highest rating in each category")
+    public Map<String, ProductDetails> getHighestRatedProductPerCategory(List<String> categories, List<ProductDetails> allProducts) {
         openPage();
-        return categories.stream().collect(Collectors.toMap(category -> category, this::getHighestRatedProductForCategory,
-                (existing, replacement) -> existing, LinkedHashMap::new));
+        return categories.stream().collect(Collectors.toMap(
+                category -> category,
+                category -> getHighestRatedProductForCategory(category, allProducts),
+                (existing, replacement) -> existing,
+                LinkedHashMap::new
+        ));
     }
 
-    private ProductDetails getHighestRatedProductForCategory(String category) {
-        return findHighestRatedProductInCurrentCategory();
+    private ProductDetails getHighestRatedProductForCategory(String category, List<ProductDetails> allProducts) {
+        return findHighestRatedProductInCurrentCategory(category, allProducts);
     }
 
-    private ProductDetails findHighestRatedProductInCurrentCategory() {
-        int totalPages = getTotalPages();
-
-        List<ProductDetails> allProductsInCurrentCategory = IntStream.rangeClosed(1, totalPages)
-                .mapToObj(pageNumber -> {
-                    clickPageNumber(pageNumber);
-                    return getProductCardsDetails();
-                })
-                .flatMap(Collection::stream)
-                .toList();
+    private ProductDetails findHighestRatedProductInCurrentCategory(String category, List<ProductDetails> allProducts ) {
+        List<ProductDetails> allProductsInCurrentCategory = allProducts.stream().filter(product -> product.getCategory().contains(category)).toList();
 
         return allProductsInCurrentCategory.stream()
                 .max(Comparator.comparingDouble(ProductDetails::getRating))
@@ -345,6 +343,7 @@ public class ProductListingPage {
                 .price(new BigDecimal(cleanPrice)).build();
     }
 
+    @Step("Collect all possible products and their details first")
     public List<ProductDetails> collectProductDetailsForAllCategories() {
         List<ProductDetails> products = new java.util.ArrayList<>();
         int totalPages = getTotalPages();

@@ -10,7 +10,8 @@
 
     <test name="ProductListingTests">
         <classes>
-            <class name="tests.ProductListingTest"/>
+            <class name="tests.NewTests"/>
+              <class name="tests.NewTestsReview"/>
         </classes>
     </test>
 

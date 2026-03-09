@@ -1,0 +1,55 @@
+name: UI Tests with AI Allure Report
+
+# Запускаем ручками (workflow_dispatch) или при пуше в main
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  test-and-report:
+    runs-on: ubuntu-latest
+
+    # Права для записи на ветку gh-pages (нужно для хостинга отчета)
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (или твоя версия Java)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run Maven Tests
+        run: mvn clean test
+        # КРИТИЧНО: Не убиваем пайплайн, если тесты упали! Нам нужен отчет по ошибкам.
+        continue-on-error: true
+
+      - name: Generate Allure Report
+        run: mvn allure:report
+
+      - name: Run AI Analyst
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        # Запускаем твой класс с ИИ. Если класс лежит в папке test, оставляем -Dexec.classpathScope=test
+        run: mvn exec:java -Dexec.mainClass="base.AllureAiRunner" -Dexec.classpathScope=test
+
+      - name: Deploy Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Указываем папку, которую Allure сгенерировал на предыдущих шагах
+          publish_dir: ./target/site/allure-maven-plugin
+
+      - name: Output AI Report Link
+        # Генерируем красивую ссылку на твой отчет в логах!
+        run: |
+          echo "========================================================"
+          echo "🚀 ОТЧЕТ С ИИ-АНАЛИЗОМ ГОТОВ И ОПУБЛИКОВАН:"
+          echo "🔗 https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo "========================================================"
