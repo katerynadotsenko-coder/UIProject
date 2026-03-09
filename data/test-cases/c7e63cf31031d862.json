@@ -1,12 +1,12 @@
 {
-  "uid" : "6fa6ff0c87bc0a5c",
+  "uid" : "c7e63cf31031d862",
   "name" : "openChallengePage",
   "fullName" : "tests.NewTests.openChallengePage",
   "historyId" : "df1d5579df75dc0ffc5a8c91826b7477",
   "time" : {
-    "start" : 1773072108081,
-    "stop" : 1773072108082,
-    "duration" : 1
+    "start" : 1773073767484,
+    "stop" : 1773073767484,
+    "duration" : 0
   },
   "status" : "broken",
   "statusMessage" : "Cannot invoke \"org.openqa.selenium.WebDriver.get(String)\" because \"this.driver\" is null",
@@ -42,7 +42,7 @@
     "value" : "runnervm0kj6c"
   }, {
     "name" : "thread",
-    "value" : "2416@runnervm0kj6c.main(1)"
+    "value" : "2382@runnervm0kj6c.main(1)"
   }, {
     "name" : "framework",
     "value" : "testng"
@@ -70,7 +70,7 @@
     } ],
     "tags" : [ ]
   },
-  "source" : "6fa6ff0c87bc0a5c.json",
+  "source" : "c7e63cf31031d862.json",
   "parameterValues" : [ ],
-  "descriptionHtml" : "<br><hr><h3>\uD83E\uDD16 AI AQA Assistant Analysis</h3><pre style=\"white-space: pre-wrap; word-wrap: break-word; background-color: #f8eaec; padding: 15px; border-radius: 5px; border-left: 5px solid #d9534f;\">TYPE: Bug\nREASON: The WebDriver instance is null, preventing the application from navigating to a URL.\nCODE: pages.ProductListingPage.openPage\nSCREENSHOT: No screenshot is attached. The elements causing the error are not visible in this screenshot.</pre>"
+  "descriptionHtml" : "<br><hr><h3>\uD83E\uDD16 AI AQA Assistant Analysis</h3><pre style=\"white-space: pre-wrap; word-wrap: break-word; background-color: #f8eaec; padding: 15px; border-radius: 5px; border-left: 5px solid #d9534f;\">⚠️ **AI AQA Assistant:** Analysis unavailable. Gemini API rate limit exceeded or a network error occurred.</pre>"
 }

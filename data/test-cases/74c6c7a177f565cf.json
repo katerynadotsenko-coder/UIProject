@@ -1,12 +1,12 @@
 {
-  "uid" : "6a8ee07985a316a5",
+  "uid" : "74c6c7a177f565cf",
   "name" : "openChallengePage",
   "fullName" : "tests.NewTestsReview.openChallengePage",
   "historyId" : "c9a47607b5732092c979bf8f9c13db35",
   "time" : {
-    "start" : 1773072108548,
-    "stop" : 1773072108548,
-    "duration" : 0
+    "start" : 1773073767709,
+    "stop" : 1773073767710,
+    "duration" : 1
   },
   "status" : "broken",
   "statusMessage" : "Cannot invoke \"org.openqa.selenium.WebDriver.get(String)\" because \"this.driver\" is null",
@@ -15,7 +15,7 @@
   "newFailed" : false,
   "newBroken" : false,
   "newPassed" : false,
-  "retriesCount" : 1,
+  "retriesCount" : 0,
   "retriesStatusChange" : false,
   "beforeStages" : [ ],
   "afterStages" : [ ],
@@ -42,7 +42,7 @@
     "value" : "runnervm0kj6c"
   }, {
     "name" : "thread",
-    "value" : "2416@runnervm0kj6c.main(1)"
+    "value" : "2382@runnervm0kj6c.main(1)"
   }, {
     "name" : "framework",
     "value" : "testng"
@@ -58,28 +58,13 @@
   } ],
   "parameters" : [ ],
   "links" : [ ],
-  "hidden" : false,
-  "retry" : false,
+  "hidden" : true,
+  "retry" : true,
   "extra" : {
-    "severity" : "normal",
-    "retries" : [ {
-      "uid" : "f5c20b5f9db3b3f4",
-      "status" : "broken",
-      "statusDetails" : "Cannot invoke \"org.openqa.selenium.WebDriver.get(String)\" because \"this.driver\" is null",
-      "time" : {
-        "start" : 1773072108348,
-        "stop" : 1773072108349,
-        "duration" : 1
-      }
-    } ],
-    "categories" : [ {
-      "name" : "Test defects",
-      "matchedStatuses" : [ ],
-      "flaky" : false
-    } ],
+    "categories" : [ ],
     "tags" : [ ]
   },
-  "source" : "6a8ee07985a316a5.json",
+  "source" : "74c6c7a177f565cf.json",
   "parameterValues" : [ ],
-  "descriptionHtml" : "<br><hr><h3>\uD83E\uDD16 AI AQA Assistant Analysis</h3><pre style=\"white-space: pre-wrap; word-wrap: break-word; background-color: #f8eaec; padding: 15px; border-radius: 5px; border-left: 5px solid #d9534f;\">TYPE: Bug\nREASON: The `WebDriver` instance `this.driver` is null when attempting to navigate to a URL.\nCODE: pages.ProductListingPage.openPage\nSCREENSHOT: The elements causing the error are not visible in this screenshot.</pre>"
+  "descriptionHtml" : "<br><hr><h3>\uD83E\uDD16 AI AQA Assistant Analysis</h3><pre style=\"white-space: pre-wrap; word-wrap: break-word; background-color: #f8eaec; padding: 15px; border-radius: 5px; border-left: 5px solid #d9534f;\">TYPE: Env\nREASON: The WebDriver instance was null when attempting to navigate to a URL.\nCODE: pages.ProductListingPage.openPage\nSCREENSHOT: The elements causing the error are not visible in this screenshot.</pre>"
 }
