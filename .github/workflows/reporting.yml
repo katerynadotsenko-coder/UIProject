@@ -3,7 +3,7 @@ name: UI Tests with AI Allure Report
 # Запускаем ручками (workflow_dispatch) или при пуше в main
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   workflow_dispatch:
 
 jobs:
