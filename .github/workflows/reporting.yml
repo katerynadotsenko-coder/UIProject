@@ -37,7 +37,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         # Запускаем твой класс с ИИ. Если класс лежит в папке test, оставляем -Dexec.classpathScope=test
-        run: mvn exec:java -Dexec.mainClass="base.AllureAiRunner" -Dexec.classpathScope=test
+        run: mvn exec:java -Dexec.mainClass="report.parser.AllureAiRunner" -Dexec.classpathScope=test
         continue-on-error: true
 
       - name: Deploy Report to GitHub Pages
