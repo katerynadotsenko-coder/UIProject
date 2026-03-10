@@ -1,15 +1,15 @@
 {
-  "uid" : "87cf175913492219",
+  "uid" : "66ccc5b9011c94e0",
   "name" : "PLP_003",
   "fullName" : "tests.NewTestsReview.findHighestRatedProductPerCategory",
   "historyId" : "c344ef8f033254fdf3b72371fb232eee",
   "time" : {
-    "start" : 1773074634522,
-    "stop" : 1773074637835,
-    "duration" : 3313
+    "start" : 1773133935248,
+    "stop" : 1773133938555,
+    "duration" : 3307
   },
   "description" : "For each category, collect all cards across all pages, parse ratings, find the highest-rated product per category, and assert rating > 0.",
-  "descriptionHtml" : "<p>For each category, collect all cards across all pages, parse ratings, find the highest-rated product per category, and assert rating &gt; 0.</p>\n<br><hr><h3>\uD83E\uDD16 AI AQA Assistant Analysis</h3><pre style=\"white-space: pre-wrap; word-wrap: break-word; background-color: #f8eaec; padding: 15px; border-radius: 5px; border-left: 5px solid #d9534f;\">The test `PLP_003` (`tests.NewTestsReview.findHighestRatedProductPerCategory`) failed with the message: \"No valid rating found for category: KATE_CATEGORY expected [true] but found [false]\".\n\n**Analysis:**\n\n1.  **Test Description:** The test aims to collect product cards across all pages for each category, parse ratings, find the highest-rated product per category, and assert that its rating is greater than 0.\n\n2.  **Execution Steps:**\n    *   \"Collect all possible products and their details first\" - **Passed**. This step successfully collected a list of `ProductDetails` objects.\n    *   \"Get the product with the highest rating in each category\" - **Passed**. This step processed the collected products. The input `categories` included `[Books, Sports, Home, Clothing, Electronics, KATE_CATEGORY]`.\n    *   \"Assert the product with the highest rating in each category\" - **Failed**. The `highestRatedProducts` parameter for this step shows that for `KATE_CATEGORY`, the result was `ProductDetails(name=No Product Found, rating=0.0, price=0, category=N/A)`. The assertion `rating > 0` then failed for this entry.\n\n3.  **Screenshot Review:**\n    *   The screenshot displays a product listing page with a sidebar showing available categories.\n    *   The categories visible in the sidebar are \"Books\", \"Sports\", \"Home\", \"Clothing\", \"Electronics\".\n    *   Crucially, the category \"KATE_CATEGORY\" is **not visible** in the list of categories on the webpage.\n\n**Conclusion:**\n\nThe test failed because it attempted to find the highest-rated product for a category named \"KATE_CATEGORY\". However, based on the collected product data and the provided screenshot, it appears that \"KATE_CATEGORY\" either does not exist on the webpage, or no products were found under this category during the test execution. As a result, the test recorded \"No Product Found\" with a rating of 0.0 for \"KATE_CATEGORY\", leading to the assertion `rating > 0` failing.\n\n**Recommendation:**\n\nInvestigate why \"KATE_CATEGORY\" is being included in the list of categories to be tested.\n*   **If \"KATE_CATEGORY\" is expected to exist and have products:** There might be an issue with the application's data, category filtering, or the test's product collection logic that prevents products from this category from being found.\n*   **If \"KATE_CATEGORY\" is not a valid or active category:** The test should be updated to only include valid and active categories that are expected to have products.</pre>",
+  "descriptionHtml" : "<p>For each category, collect all cards across all pages, parse ratings, find the highest-rated product per category, and assert rating &gt; 0.</p>\n<br><hr><h3>\uD83E\uDD16 AI AQA Assistant Analysis</h3><pre style=\"white-space: pre-wrap; word-wrap: break-word; background-color: #f8eaec; padding: 15px; border-radius: 5px; border-left: 5px solid #d9534f;\">The test `PLP_003: findHighestRatedProductPerCategory` failed.\n\n**Failure Details from JSON:**\n*   **Test Objective:** For each category, collect all product cards, parse ratings, find the highest-rated product, and assert its rating is greater than 0.\n*   **Status:** Failed.\n*   **Status Message:** \"No valid rating found for category: KATE_CATEGORY expected [true] but found [false]\".\n*   **Execution Flow:**\n    1.  \"Collect all possible products and their details first\" - **Passed**.\n    2.  \"Get the product with the highest rating in each category\" - **Passed**. (For `KATE_CATEGORY`, it identified `ProductDetails(name=No Product Found, rating=0.0, price=0, category=N/A)`).\n    3.  \"Assert the product with the highest rating in each category\" - **Failed**. The assertion `rating > 0` failed specifically for `KATE_CATEGORY` because the highest rating found was 0.0.\n\n**Analysis of the Screenshot:**\nThe screenshot displays a product listing page. On the left sidebar, there are various categories listed, including \"KATE_CATEGORY\". However, in the main product display area, the section corresponding to \"KATE_CATEGORY\" appears empty, with no product cards visible.\n\n**Conclusion:**\nThe test failed because, despite \"KATE_CATEGORY\" being present as an option on the page, the application did not display any products for this category. Consequently, the test could not find any product with a rating greater than 0 for \"KATE_CATEGORY\", leading to the assertion failure. The screenshot visually confirms the absence of products under the \"KATE_CATEGORY\" section. This indicates a potential issue with product data availability or display logic for the \"KATE_CATEGORY\" on the website.</pre>",
   "status" : "failed",
   "statusMessage" : "No valid rating found for category: KATE_CATEGORY expected [true] but found [false]",
   "statusTrace" : "java.lang.AssertionError: No valid rating found for category: KATE_CATEGORY expected [true] but found [false]\n\tat org.testng.Assert.fail(Assert.java:111)\n\tat org.testng.Assert.failNotEquals(Assert.java:1578)\n\tat org.testng.Assert.assertTrue(Assert.java:57)\n\tat tests.NewTestsReview.lambda$assertHighestRatedProductsHaveValidRatings$1(NewTestsReview.java:74)\n\tat java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:721)\n\tat tests.NewTestsReview.assertHighestRatedProductsHaveValidRatings(NewTestsReview.java:72)\n\tat tests.NewTestsReview.findHighestRatedProductPerCategory(NewTestsReview.java:44)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:569)\n\tat org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)\n\tat org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:664)\n\tat org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:228)\n\tat org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:63)\n\tat org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:961)\n\tat org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:201)\n\tat org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:148)\n\tat org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:128)\n\tat java.base/java.util.ArrayList.forEach(ArrayList.java:1511)\n\tat org.testng.TestRunner.privateRun(TestRunner.java:819)\n\tat org.testng.TestRunner.run(TestRunner.java:619)\n\tat org.testng.SuiteRunner.runTest(SuiteRunner.java:443)\n\tat org.testng.SuiteRunner.runSequentially(SuiteRunner.java:437)\n\tat org.testng.SuiteRunner.privateRun(SuiteRunner.java:397)\n\tat org.testng.SuiteRunner.run(SuiteRunner.java:336)\n\tat org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)\n\tat org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:95)\n\tat org.testng.TestNG.runSuitesSequentially(TestNG.java:1301)\n\tat org.testng.TestNG.runSuitesLocally(TestNG.java:1228)\n\tat org.testng.TestNG.runSuites(TestNG.java:1134)\n\tat org.testng.TestNG.run(TestNG.java:1101)\n\tat org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:308)\n\tat org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:71)\n\tat org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:113)\n\tat org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)\n\tat org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)\n\tat org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)\n\tat org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)\n",
@@ -22,9 +22,9 @@
   "beforeStages" : [ {
     "name" : "setUp",
     "time" : {
-      "start" : 1773074633656,
-      "stop" : 1773074633984,
-      "duration" : 328
+      "start" : 1773133934097,
+      "stop" : 1773133934460,
+      "duration" : 363
     },
     "description" : "",
     "status" : "passed",
@@ -39,9 +39,9 @@
   }, {
     "name" : "openChallengePage",
     "time" : {
-      "start" : 1773074633985,
-      "stop" : 1773074634520,
-      "duration" : 535
+      "start" : 1773133934461,
+      "stop" : 1773133935245,
+      "duration" : 784
     },
     "description" : "",
     "status" : "passed",
@@ -62,9 +62,9 @@
     "steps" : [ {
       "name" : "Collect all possible products and their details first",
       "time" : {
-        "start" : 1773074634523,
-        "stop" : 1773074637799,
-        "duration" : 3276
+        "start" : 1773133935248,
+        "stop" : 1773133938518,
+        "duration" : 3270
       },
       "status" : "passed",
       "steps" : [ ],
@@ -78,8 +78,8 @@
     }, {
       "name" : "Get the product with the highest rating in each category",
       "time" : {
-        "start" : 1773074637799,
-        "stop" : 1773074637826,
+        "start" : 1773133938519,
+        "stop" : 1773133938546,
         "duration" : 27
       },
       "status" : "passed",
@@ -100,8 +100,8 @@
     }, {
       "name" : "Assert the product with the highest rating in each category",
       "time" : {
-        "start" : 1773074637826,
-        "stop" : 1773074637834,
+        "start" : 1773133938546,
+        "stop" : 1773133938554,
         "duration" : 8
       },
       "status" : "failed",
@@ -130,17 +130,17 @@
   "afterStages" : [ {
     "name" : "tearDown",
     "time" : {
-      "start" : 1773074637840,
-      "stop" : 1773074637994,
-      "duration" : 154
+      "start" : 1773133938560,
+      "stop" : 1773133938691,
+      "duration" : 131
     },
     "description" : "",
     "status" : "passed",
     "steps" : [ ],
     "attachments" : [ {
-      "uid" : "4ba2e743a89eb1c6",
+      "uid" : "d7f3ca07a1e69077",
       "name" : "Failure Screenshot",
-      "source" : "4ba2e743a89eb1c6.png",
+      "source" : "d7f3ca07a1e69077.png",
       "type" : "image/png",
       "size" : 37998
     } ],
@@ -174,7 +174,7 @@
     "value" : "runnervm0kj6c"
   }, {
     "name" : "thread",
-    "value" : "2370@runnervm0kj6c.main(1)"
+    "value" : "2490@runnervm0kj6c.main(1)"
   }, {
     "name" : "framework",
     "value" : "testng"
@@ -202,6 +202,6 @@
     } ],
     "tags" : [ ]
   },
-  "source" : "87cf175913492219.json",
+  "source" : "66ccc5b9011c94e0.json",
   "parameterValues" : [ ]
 }
