@@ -1,12 +1,12 @@
 {
-  "uid" : "abc950ceda4cdd19",
+  "uid" : "d3067e4b851a395e",
   "name" : "PLP_003_NPE_Sabotage",
   "fullName" : "tests.NewTestsReview.findHighestRatedProductWithNullSabotage",
   "historyId" : "9463b7f69c31393f68200b13168b4f6c",
   "time" : {
-    "start" : 1773158585298,
-    "stop" : 1773158588402,
-    "duration" : 3104
+    "start" : 1773158702697,
+    "stop" : 1773158705973,
+    "duration" : 3276
   },
   "status" : "failed",
   "statusMessage" : "One or more products have an invalid rating (0 or less) in category:  expected [true] but found [false]",
@@ -20,9 +20,9 @@
   "beforeStages" : [ {
     "name" : "setUp",
     "time" : {
-      "start" : 1773158584471,
-      "stop" : 1773158584773,
-      "duration" : 302
+      "start" : 1773158701748,
+      "stop" : 1773158702071,
+      "duration" : 323
     },
     "description" : "",
     "status" : "passed",
@@ -37,9 +37,9 @@
   }, {
     "name" : "openChallengePage",
     "time" : {
-      "start" : 1773158584774,
-      "stop" : 1773158585296,
-      "duration" : 522
+      "start" : 1773158702072,
+      "stop" : 1773158702695,
+      "duration" : 623
     },
     "description" : "",
     "status" : "passed",
@@ -59,9 +59,9 @@
     "steps" : [ {
       "name" : "Collect all possible products and their details first",
       "time" : {
-        "start" : 1773158585298,
-        "stop" : 1773158588401,
-        "duration" : 3103
+        "start" : 1773158702698,
+        "stop" : 1773158705972,
+        "duration" : 3274
       },
       "status" : "passed",
       "steps" : [ ],
@@ -84,17 +84,17 @@
   "afterStages" : [ {
     "name" : "tearDown",
     "time" : {
-      "start" : 1773158588403,
-      "stop" : 1773158588524,
-      "duration" : 121
+      "start" : 1773158705974,
+      "stop" : 1773158706090,
+      "duration" : 116
     },
     "description" : "",
     "status" : "passed",
     "steps" : [ ],
     "attachments" : [ {
-      "uid" : "d83515f5812be4d3",
+      "uid" : "1d6adfe4d514b932",
       "name" : "Failure Screenshot",
-      "source" : "d83515f5812be4d3.png",
+      "source" : "1d6adfe4d514b932.png",
       "type" : "image/png",
       "size" : 37998
     } ],
@@ -128,7 +128,7 @@
     "value" : "runnervm0kj6c"
   }, {
     "name" : "thread",
-    "value" : "2386@runnervm0kj6c.main(1)"
+    "value" : "2408@runnervm0kj6c.main(1)"
   }, {
     "name" : "framework",
     "value" : "testng"
@@ -153,7 +153,7 @@
     } ],
     "tags" : [ ]
   },
-  "source" : "abc950ceda4cdd19.json",
+  "source" : "d3067e4b851a395e.json",
   "parameterValues" : [ ],
-  "descriptionHtml" : "<br><hr><h3>\uD83E\uDD16 AI AQA Assistant Analysis</h3><pre style=\"white-space: pre-wrap; word-wrap: break-word; background-color: #f8eaec; padding: 15px; border-radius: 5px; border-left: 5px solid #d9534f;\">**TYPE:** Bug\n**REASON:** The test failed because it expected to find one or more products with an invalid rating (0 or less), but all products found had valid ratings. This indicates the test's expected \"sabotage\" condition was not met.\n**CODE:** `tests.NewTestsReview.findHighestRatedProductWithNullSabotage`\n**SCREENSHOT:** All visible products on the page display ratings greater than 0. This confirms the test's finding that no products with invalid ratings were present.</pre>"
+  "descriptionHtml" : "<br><hr><h3>\uD83E\uDD16 AI AQA Assistant Analysis</h3><pre style=\"white-space: pre-wrap; word-wrap: break-word; background-color: #f8eaec; padding: 15px; border-radius: 5px; border-left: 5px solid #d9534f;\">**TYPE:** Bug\n**REASON:** The test failed because it encountered one or more products with an invalid rating (0 or less) within a category, which violated an expected condition for valid product ratings.\n**CODE:** `tests.NewTestsReview.findHighestRatedProductWithNullSabotage(NewTestsReview.java:60)`\n**SCREENSHOT:** The screenshot displays a list of products, all of which show valid ratings (4 or 5 stars). The elements causing the error are not visible in this screenshot.</pre>"
 }
