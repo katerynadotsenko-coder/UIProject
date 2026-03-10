@@ -86,11 +86,17 @@ public class AllureAiRunner {
                                         Base64.getEncoder().encodeToString(screenshotBytes), "image/png"
                                 );
 
+                        String strictPrompt = "JSON: " + rootNode.toString() + "\n\n" +
+                                "You are a strict Senior Java AQA. Analyze the JSON error and the attached screenshot.\n" +
+                                "CRITICAL RULES: Do NOT write essays. Do NOT invent data. ONLY describe what you physically see.\n\n" +
+                                "YOU MUST USE THIS EXACT FORMAT AND NOTHING ELSE:\n" +
+                                "**TYPE:** (Bug / Flaky / Env)\n" +
+                                "**REASON:** (1-2 sentences explaining the core issue from the JSON)\n" +
+                                "**CODE:** (Exact class and method from the stacktrace)\n" +
+                                "**SCREENSHOT:** (1-2 sentences. Fact-check the JSON against the image truthfully. If the error is off-screen, state: 'The elements causing the error are not visible in this screenshot.')";
+
                         dev.langchain4j.data.message.TextContent textContent =
-                                dev.langchain4j.data.message.TextContent.from(
-                                        "JSON: " + rootNode.toString() +
-                                                "\nAnalyze this JSON and the attached screenshot strictly following the system rules."
-                                );
+                                dev.langchain4j.data.message.TextContent.from(strictPrompt);
 
                         // 3. Combine them into a single UserMessage
                         dev.langchain4j.data.message.UserMessage multimodalMsg =
@@ -110,7 +116,6 @@ public class AllureAiRunner {
             }
         }
     }
-
 
 
 }
