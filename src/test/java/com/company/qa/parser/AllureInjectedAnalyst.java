@@ -1,5 +1,6 @@
-package report.parser;
+package com.company.qa.parser;
 
+import com.company.qa.utils.HtmlFormatter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public class AllureInjectedAnalyst {
             String currentHtml = root.has("descriptionHtml") ? root.get("descriptionHtml").asText() : "";
 
             // 2. Format and inject the AI advice
-            String updatedHtml = utils.HtmlFormatter.appendAiAdvice(currentHtml, aiAdvice);
+            String updatedHtml = HtmlFormatter.appendAiAdvice(currentHtml, aiAdvice);
 
             // 3. Inject it straight into the HTML field
             root.put("descriptionHtml", updatedHtml);

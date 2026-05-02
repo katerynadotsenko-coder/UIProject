@@ -1,11 +1,11 @@
-package report.parser;
+package com.company.qa.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import dev.langchain4j.service.AiServices;
-import ai.client.AllureAnalyst;
-import utils.AiConfig;
+import com.company.qa.client.AllureAnalyst;
+import com.company.qa.utils.AiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

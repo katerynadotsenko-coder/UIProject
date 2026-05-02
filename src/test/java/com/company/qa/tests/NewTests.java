@@ -1,24 +1,27 @@
-package tests;
+package com.company.qa.tests;
 
-import base.BaseTest;
+import com.company.qa.base.BaseTest;
+import com.company.qa.pages.ProductListingPage;
+import com.company.qa.pages.models.ProductDetails;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.Story;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import pages.ProductListingPage;
-import pages.models.ProductDetails;
 
 import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
 
 public class NewTests extends BaseTest {
 
+    @Autowired
     private ProductListingPage page;
 
     // Known categories on the challenge page
@@ -27,7 +30,6 @@ public class NewTests extends BaseTest {
 
     @BeforeMethod(alwaysRun = true)
     public void openChallengePage() {
-        page = new ProductListingPage(driver);
         page.openPage();
     }
 
@@ -35,7 +37,7 @@ public class NewTests extends BaseTest {
     @Story("Category Filter")
     @Description("For each category, collect all cards across all pages, parse prices, "
             + "find the most expensive product per category, and assert price > 0.")
-    public void findMostExpensiveProductPerCategory() {
+    public void findMostExpensiveProductPerCategory() throws InterruptedException {
         List<ProductDetails> allCategoriesProducts = page.collectProductDetailsForAllCategories();
         for (String category : KNOWN_CATEGORIES) {
             ProductDetails productInfo = findMostExpensiveProductIn(category, allCategoriesProducts);
@@ -45,6 +47,7 @@ public class NewTests extends BaseTest {
                     "No valid price found for category: " + category
             );
         }
+        Thread.sleep(5000);
         log.info("[PLP_004] All categories processed successfully.");
     }
 
@@ -56,7 +59,7 @@ public class NewTests extends BaseTest {
     @Step("Find the most expensive product in category {category}")
     public ProductDetails findMostExpensiveProductIn(String category, List<ProductDetails> products) {
 
-        List<ProductDetails> filtered=products.stream().filter(product->product.getCategory().contains(category)).toList();
+        List<ProductDetails> filtered = products.stream().filter(product -> product.getCategory().contains(category)).toList();
         return findMostExpensiveProductFromList(filtered)
                 .orElseThrow(() -> new IllegalStateException("No products found in category: " + category));
     }

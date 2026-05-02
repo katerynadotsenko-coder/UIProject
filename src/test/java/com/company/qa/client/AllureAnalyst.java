@@ -1,9 +1,9 @@
-package ai.client;
+package com.company.qa.client;
 
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
-import utils.AiConfig;
+import com.company.qa.utils.AiConfig;
 
 public interface AllureAnalyst {
     @SystemMessage(AiConfig.SYSTEM_MESSAGE)

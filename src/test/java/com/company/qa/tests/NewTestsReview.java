@@ -1,35 +1,35 @@
-package tests;
+package com.company.qa.tests;
 
-import base.BaseTest;
+import com.company.qa.base.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.Story;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import pages.ProductListingPage;
-import pages.models.ProductDetails;
+import com.company.qa.pages.ProductListingPage;
+import com.company.qa.pages.models.ProductDetails;
 
 import java.math.BigDecimal;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 
 public class NewTestsReview extends BaseTest {
 
+    @Autowired
     private ProductListingPage page;
+
     private static final Logger log = LoggerFactory.getLogger(NewTestsReview.class);
 
     // Known categories on the challenge page
-    private static final List<String> KNOWN_CATEGORIES = List.of("Books", "Sports", "Home", "Clothing", "Electronics", "KATE_CATEGORY");
+    private static final List<String> KNOWN_CATEGORIES = List.of("Books", "Sports", "Home", "Clothing", "Electronics");
 
     @BeforeMethod(alwaysRun = true)
     public void openChallengePage() {
-        page = new ProductListingPage(driver);
         page.openPage();
     }
 

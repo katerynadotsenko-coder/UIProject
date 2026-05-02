@@ -3,15 +3,9 @@
 
 <suite name="ProductListingPaginationSuite" verbose="2" thread-count="1">
 
-    <listeners>
-        <!-- Allure TestNG listener — generates allure-results/ after each test -->
-        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
-    </listeners>
-
     <test name="ProductListingTests">
         <classes>
-            <class name="tests.NewTests"/>
-              <class name="tests.NewTestsReview"/>
+            <class name="com.company.qa.tests.ProductListingTest"/>
         </classes>
     </test>
 

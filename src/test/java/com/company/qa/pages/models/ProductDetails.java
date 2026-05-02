@@ -1,4 +1,4 @@
-package pages.models;
+package com.company.qa.pages.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
