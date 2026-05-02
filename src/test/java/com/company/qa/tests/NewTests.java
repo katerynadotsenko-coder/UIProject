@@ -47,6 +47,7 @@ public class NewTests extends BaseTest {
                     "No valid price found for category: " + category
             );
         }
+        Thread.sleep(5000);
         log.info("[PLP_004] All categories processed successfully.");
     }
 
