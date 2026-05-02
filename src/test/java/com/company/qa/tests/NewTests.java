@@ -57,8 +57,9 @@ public class NewTests extends BaseTest {
     }
 
     @Step("Find the most expensive product in category {category}")
-    public ProductDetails findMostExpensiveProductIn(String category, List<ProductDetails> products) {
+    public ProductDetails findMostExpensiveProductIn(String category, List<ProductDetails> products) throws InterruptedException {
 
+        Thread.sleep(5000);
         List<ProductDetails> filtered = products.stream().filter(product -> product.getCategory().contains(category)).toList();
         return findMostExpensiveProductFromList(filtered)
                 .orElseThrow(() -> new IllegalStateException("No products found in category: " + category));
