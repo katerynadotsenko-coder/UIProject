@@ -1,4 +1,4 @@
-package utils;
+package com.company.qa.utils;
 
 public class HtmlFormatter {
     private static final String AI_ADVICE_TEMPLATE = "<br><hr>" +

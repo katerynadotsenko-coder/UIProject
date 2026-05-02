@@ -1,4 +1,4 @@
-package utils;
+package com.company.qa.utils;
 
 public class AiConfig {
     public static final String MODEL_NAME = "gemini-2.5-flash";
